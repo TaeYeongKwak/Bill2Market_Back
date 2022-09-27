@@ -1,0 +1,63 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: CD with AWS S3
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    
+    - name: Build with Gradle
+      run: ./gradlew clean build
+      env:
+          CI: false
+          
+    - name: make artifacts dir
+      run: mkdir ./artifacts/
+ 
+    - name: Make zip file
+      run: zip -r ./artifacts/bill2_back.zip .
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_IAM_MANAGER_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_IAM_MANAGER_SECRET_ACCESS_KEY }}
+        aws-region: ap-northeast-2
+          
+    - name: deploy to s3
+      uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --acl public-read --follow-symlinks --delete
+      env:
+        AWS_S3_BUCKET: ${{secrets.AWS_PRODUCTION_BUCKET_NAME}}
+        SOURCE_DIR: './artifacts'
+        DEST_DIR: 'backend/'
+        
+    - name: WS 1 Deploy
+      run: aws deploy create-deployment --application-name Bill2-Back-Deploy --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name Bill2-WAS1-Deploy --s3-location bucket=bill2market,bundleType=zip,key=backend/bill2_back.zip
+      
+    - name: WAS 2 Deploy
+      run: aws deploy create-deployment --application-name Bill2-Back-Deploy --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name Bill2-WAS2-Deploy --s3-location bucket=bill2market,bundleType=zip,key=backend/bill2_back.zip

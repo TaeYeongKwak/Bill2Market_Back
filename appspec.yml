@@ -1,0 +1,19 @@
+version: 0.0
+os: linux
+
+files:
+  - source: /
+    destination: /deploy/backend
+    overwrite: yes
+    
+permissions:
+  - object: /deploy/backend
+    owner: root
+    group: root
+    mode: 755
+    
+hooks:
+  AfterInstall:
+    - location: /deploy_scripts/after_install.sh
+      timeout: 1000
+      runas: root
