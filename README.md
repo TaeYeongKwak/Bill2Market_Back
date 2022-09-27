@@ -24,3 +24,4 @@ Spring Boot-2.6.4, Gradle, Jpa, AWS RDS(MariaDB), Redis-3.0.5, ElasticSearch-7.1
 - 금융 결제원 API를 활용한 결제 시스템 구현
 - MariaDB의 ST_Distance_Sphere 함수와 QueryDSL을 이용한 주변 물품 탐색 기능 구현
 - ControllerAdvice를 활용한 Exception Handling 처리
+- Swagger API를 사용한 API 문서 생성
