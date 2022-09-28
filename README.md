@@ -34,6 +34,7 @@ PM 1명, 아키텍처 1명, 프론트엔드 3명, 백엔드 3명, QA 1명
 - ControllerAdvice를 활용한 Exception Handling 처리
 - Swagger API를 사용한 API 문서 생성
 - Spring 비동기 스케줄링을 통한 시간에 따른 계약 상태 변경 기능 구현
+- 뮬품 글 작성, 수정, 삭제, 리뷰 작성 기능 구현
 
 ### 발표자료
 [빌리마켓_발표자료.pdf](https://github.com/TaeYeongKwak/Bill2Market_Back/files/9660531/default.pdf)
